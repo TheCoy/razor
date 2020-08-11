@@ -1,2 +1,2 @@
-# razor
-A toolkit called razor base cobra
+# taskrobot
+A golang tool like a robot for do multi tasks
