@@ -1,0 +1,5 @@
+inputFile: ./data/multiText.txt
+outputFile:  ./data/detectResult.csv
+logFile: ./log/detect2.log
+detectType: latex
+worker: 2

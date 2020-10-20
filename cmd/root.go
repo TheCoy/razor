@@ -23,10 +23,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -35,16 +35,18 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "razor",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "Razor is a series of toolkits",
+	Long: `Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files to quickly create a Cobra application.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("viper:author=", viper.GetString("author"))
+		author, _ := cmd.PersistentFlags().GetString("author")
+		fmt.Println("flag:author=", author)
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+		fmt.Println("viper:port=", viper.GetInt("port"))
+		port, _ := cmd.Flags().GetInt("port")
+		fmt.Println("flag:port=", port)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -65,9 +67,16 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.razor.yaml)")
 
+	rootCmd.PersistentFlags().String("author", "YOUR NAME", "author name for copyright attribution")
+
+	//viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
+
+	rootCmd.Flags().Int("port", 8080, "port for root command")
+	viper.BindPFlag("port", rootCmd.Flags().Lookup("port"))
+
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().BoolP("toggle", "e", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -85,7 +94,9 @@ func initConfig() {
 
 		// Search config in home directory with name ".razor" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".razor")
+		viper.SetConfigType("yaml")
+		//viper.SetConfigName(".razor")
+
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

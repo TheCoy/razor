@@ -1,0 +1,3 @@
+author: coy
+port: 10020
+logFile: ./log/demoApp0.log
