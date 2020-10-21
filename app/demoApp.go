@@ -23,7 +23,7 @@ func (app *DemoApp) initApp() error {
 	if err != nil {
 		return err
 	}
-	app.Logger = log.New(logOutput, app.LogFileName, 1)
+	app.Logger = log.New(logOutput, "[Demo App]", 3)
 
 	return nil
 }
