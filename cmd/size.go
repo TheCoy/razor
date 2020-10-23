@@ -18,32 +18,35 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/TheCoy/razor/app"
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
-	path   string
-	width  *int
-	height *int
+	robot app.RobotApp
 )
 
 // sizeCmd represents the size command
 var sizeCmd = &cobra.Command{
 	Use:   "size",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "A Command which can read config dynamically",
+	Long: `A Command which can read config dynamically, For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+razor size --config ./size.yml`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("size called")
 		fmt.Println("input args:", cmd.PersistentFlags().Args())
 		fmt.Println("flag args:", cmd.Flags().Args())
-		fmt.Println("path:", path)
-		fmt.Printf("width=%d, height=%d\n", *width, *height)
 
+		robot = app.RobotApp{
+			Times:  viper.GetInt64("times"),
+			Worker: viper.GetInt("worker"),
+			QPS:    viper.GetInt64("qps"),
+		}
+
+		app.CLI(args, &robot)
 	},
 }
 
@@ -55,10 +58,21 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// sizeCmd.PersistentFlags().String("foo", "", "A help for foo")
-	height = sizeCmd.PersistentFlags().Int("width", 0, "width for object")
-	width = sizeCmd.PersistentFlags().Int("height", 0, "height for object")
-	sizeCmd.Flags().StringVar(&path, "path", "[default path]", "path to locate file")
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// sizeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	sizeCmd.Flags().Int64("times", 100, "total times for request")
+	sizeCmd.Flags().Int64("qps", 1, "qps for requet")
+	sizeCmd.Flags().Int("worker", 1, "num for workers")
+
+	viper.BindPFlag("worker", sizeCmd.Flags().Lookup("worker"))
+	viper.BindPFlag("qps", sizeCmd.Flags().Lookup("qps"))
+	viper.BindPFlag("times", sizeCmd.Flags().Lookup("times"))
+
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("config changed:", e.Name)
+		robot.QPS = viper.GetInt64("qps")
+		robot.SetNewLimiter(int(robot.QPS))
+		fmt.Println("【robot】", fmt.Sprint(robot))
+	})
 }
