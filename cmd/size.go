@@ -19,7 +19,6 @@ import (
 	"fmt"
 
 	"github.com/TheCoy/razor/app"
-	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -69,10 +68,4 @@ func init() {
 	viper.BindPFlag("qps", sizeCmd.Flags().Lookup("qps"))
 	viper.BindPFlag("times", sizeCmd.Flags().Lookup("times"))
 
-	viper.OnConfigChange(func(e fsnotify.Event) {
-		fmt.Println("config changed:", e.Name)
-		robot.QPS = viper.GetInt64("qps")
-		robot.SetNewLimiter(int(robot.QPS))
-		fmt.Println("【robot】", fmt.Sprint(robot))
-	})
 }
