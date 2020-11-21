@@ -34,6 +34,11 @@ var sizeCmd = &cobra.Command{
 	Long: `A Command which can read config dynamically, For example:
 
 razor size --config ./size.yml`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		_ = viper.BindPFlag("worker", cmd.Flags().Lookup("worker"))
+		_ = viper.BindPFlag("qps", cmd.Flags().Lookup("qps"))
+		_ = viper.BindPFlag("times", cmd.Flags().Lookup("times"))
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("size called")
 		fmt.Println("input args:", cmd.PersistentFlags().Args())
@@ -63,9 +68,4 @@ func init() {
 	sizeCmd.Flags().Int64("times", 100, "total times for request")
 	sizeCmd.Flags().Int64("qps", 1, "qps for requet")
 	sizeCmd.Flags().Int("worker", 1, "num for workers")
-
-	viper.BindPFlag("worker", sizeCmd.Flags().Lookup("worker"))
-	viper.BindPFlag("qps", sizeCmd.Flags().Lookup("qps"))
-	viper.BindPFlag("times", sizeCmd.Flags().Lookup("times"))
-
 }

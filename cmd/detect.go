@@ -34,6 +34,13 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		_ = viper.BindPFlag("inputFile", cmd.Flags().Lookup("inputFile"))
+		_ = viper.BindPFlag("outputFile", cmd.Flags().Lookup("outputFile"))
+		_ = viper.BindPFlag("logFile", cmd.Flags().Lookup("logFile"))
+		_ = viper.BindPFlag("detectType", cmd.Flags().Lookup("type"))
+		_ = viper.BindPFlag("worker", cmd.Flags().Lookup("worker"))
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		detectApp := app.RegexDetectApp{
 			InputFileName:  viper.GetString("inputFile"),
@@ -65,9 +72,4 @@ func init() {
 	detectCmd.Flags().String("type", "html", "type for text detect")
 	detectCmd.Flags().Int("worker", 1, "num for workers")
 
-	viper.BindPFlag("inputFile", detectCmd.Flags().Lookup("inputFile"))
-	viper.BindPFlag("outputFile", detectCmd.Flags().Lookup("outputFile"))
-	viper.BindPFlag("logFile", detectCmd.Flags().Lookup("logFile"))
-	viper.BindPFlag("detectType", detectCmd.Flags().Lookup("type"))
-	viper.BindPFlag("worker", detectCmd.Flags().Lookup("worker"))
 }
