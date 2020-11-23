@@ -25,8 +25,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fsnotify/fsnotify"
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -109,10 +108,4 @@ func initConfig() {
 
 	viper.WatchConfig()
 
-	viper.OnConfigChange(func(e fsnotify.Event) {
-		fmt.Println("config changed:", e.Name)
-		robot.QPS = viper.GetInt64("qps")
-		robot.SetNewLimiter(int(robot.QPS))
-		fmt.Println("【robot】", fmt.Sprint(robot))
-	})
 }

@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/fsnotify/fsnotify"
 
 	"github.com/TheCoy/razor/app"
 	"github.com/spf13/cobra"
@@ -38,6 +39,13 @@ razor size --config ./size.yml`,
 		_ = viper.BindPFlag("worker", cmd.Flags().Lookup("worker"))
 		_ = viper.BindPFlag("qps", cmd.Flags().Lookup("qps"))
 		_ = viper.BindPFlag("times", cmd.Flags().Lookup("times"))
+
+		//在这里监听各自感兴趣的参数变化
+		viper.OnConfigChange(func(e fsnotify.Event) {
+			fmt.Println("config changed:", e.Name)
+			newQps := viper.GetInt64("qps")
+			robot.SetNewLimiter(int(newQps))
+		})
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("size called")

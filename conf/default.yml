@@ -1,4 +1,4 @@
 author: coy
 port: 10022
-qps: 10
+qps: 5
 logFile: ./log/demoApp0.log
